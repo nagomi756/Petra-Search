@@ -8,78 +8,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   
   <style>
-    /* --- テーマ定義 (CSS変数) --- */
-    :root, [data-theme="purple"] {
-      --bg-main: #0b0713;
-      --bg-card: #150e26;
-      --bg-header: #120a21;
-      --bg-inner: #0d0718;
-      --bg-accent: #4c1d95;
-      --bg-accent-hover: #6d28d9;
-      --text-main: #f3f1f6;
-      --text-muted: #a78bfa;
-      --text-accent: #c084fc;
-      --border-color: rgba(139, 92, 246, 0.25);
-      --highlight-bg: rgba(234, 179, 8, 0.3);
-      --highlight-text: #fef08a;
-      --shadow-color: rgba(76, 29, 149, 0.2);
-    }
-
-    [data-theme="white"] {
-      --bg-main: #f8fafc;
-      --bg-card: #ffffff;
-      --bg-header: #e2e8f0;
-      --bg-inner: #f1f5f9;
-      --bg-accent: #6d28d9;
-      --bg-accent-hover: #5b21b6;
-      --text-main: #0f172a;
-      --text-muted: #475569;
-      --text-accent: #7c3aed;
-      --border-color: rgba(109, 40, 217, 0.15);
-      --highlight-bg: rgba(234, 179, 8, 0.25);
-      --highlight-text: #854d0e;
-      --shadow-color: rgba(0, 0, 0, 0.05);
-    }
-
-    [data-theme="black"] {
-      --bg-main: #000000;
-      --bg-card: #0f0f0f;
-      --bg-header: #141414;
-      --bg-inner: #070707;
-      --bg-accent: #262626;
-      --bg-accent-hover: #404040;
-      --text-main: #ffffff;
-      --text-muted: #a3a3a3;
-      --text-accent: #e5e5e5;
-      --border-color: rgba(255, 255, 255, 0.1);
-      --highlight-bg: rgba(234, 179, 8, 0.4);
-      --highlight-text: #fef08a;
-      --shadow-color: rgba(0, 0, 0, 0.8);
-    }
-
-    [data-theme="pink"] {
-      --bg-main: #0d0408;
-      --bg-card: #200814;
-      --bg-header: #17050e;
-      --bg-inner: #12030b;
-      --bg-accent: #be185d;
-      --bg-accent-hover: #db2777;
-      --text-main: #fdf2f8;
-      --text-muted: #f472b6;
-      --text-accent: #fbcfe8;
-      --border-color: rgba(219, 39, 119, 0.25);
-      --highlight-bg: rgba(245, 158, 11, 0.35);
-      --highlight-text: #fde68a;
-      --shadow-color: rgba(190, 24, 93, 0.25);
-    }
-
-    body {
-      font-family: 'Noto Sans JP', sans-serif;
-      background-color: var(--bg-main);
-      color: var(--text-main);
-      transition: background-color 0.25s ease, color 0.25s ease;
-    }
-
+    /* --- テーマ定義 --- */
+    :root, [data-theme="purple"] { --bg-main: #0b0713; --bg-card: #150e26; --bg-header: #120a21; --bg-inner: #0d0718; --bg-accent: #4c1d95; --bg-accent-hover: #6d28d9; --text-main: #f3f1f6; --text-muted: #a78bfa; --text-accent: #c084fc; --border-color: rgba(139, 92, 246, 0.25); --highlight-bg: rgba(234, 179, 8, 0.3); --highlight-text: #fef08a; --shadow-color: rgba(76, 29, 149, 0.2); }
+    [data-theme="white"] { --bg-main: #f8fafc; --bg-card: #ffffff; --bg-header: #e2e8f0; --bg-inner: #f1f5f9; --bg-accent: #6d28d9; --bg-accent-hover: #5b21b6; --text-main: #0f172a; --text-muted: #475569; --text-accent: #7c3aed; --border-color: rgba(109, 40, 217, 0.15); --highlight-bg: rgba(234, 179, 8, 0.25); --highlight-text: #854d0e; --shadow-color: rgba(0, 0, 0, 0.05); }
+    [data-theme="black"] { --bg-main: #000000; --bg-card: #0f0f0f; --bg-header: #141414; --bg-inner: #070707; --bg-accent: #262626; --bg-accent-hover: #404040; --text-main: #ffffff; --text-muted: #a3a3a3; --text-accent: #e5e5e5; --border-color: rgba(255, 255, 255, 0.1); --highlight-bg: rgba(234, 179, 8, 0.4); --highlight-text: #fef08a; --shadow-color: rgba(0, 0, 0, 0.8); }
+    [data-theme="pink"] { --bg-main: #0d0408; --bg-card: #200814; --bg-header: #17050e; --bg-inner: #12030b; --bg-accent: #be185d; --bg-accent-hover: #db2777; --text-main: #fdf2f8; --text-muted: #f472b6; --text-accent: #fbcfe8; --border-color: rgba(219, 39, 119, 0.25); --highlight-bg: rgba(245, 158, 11, 0.35); --highlight-text: #fde68a; --shadow-color: rgba(190, 24, 93, 0.25); }
+    body { font-family: 'Noto Sans JP', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: background-color 0.25s ease, color 0.25s ease; }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-inner); }
     ::-webkit-scrollbar-thumb { background: var(--bg-accent); border-radius: 3px; }
@@ -87,29 +21,24 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <header class="border-b border-[var(--border-color)] bg-[var(--bg-header)]/90 backdrop-blur sticky top-0 z-50 px-4 py-3 transition-colors duration-200">
+  <header class="border-b border-[var(--border-color)] bg-[var(--bg-header)]/90 backdrop-blur sticky top-0 z-50 px-4 py-3">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-800 to-indigo-900 border border-purple-500/50 flex items-center justify-center font-bold text-purple-200">P</div>
         <div>
-          <h1 class="text-lg font-bold tracking-wider text-[var(--text-accent)] flex items-center gap-2">
-            ペトラナイトメア -Petra Nightmare-
-            <span class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2 py-0.5 rounded-full border border-[var(--border-color)]">Web公開版</span>
-          </h1>
+          <h1 class="text-lg font-bold tracking-wider text-[var(--text-accent)] flex items-center gap-2">ペトラナイトメア <span class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2 py-0.5 rounded-full border border-[var(--border-color)]">Web公開版</span></h1>
           <p class="text-xs text-[var(--text-muted)]">ブラウザ単体で動作する軽量・高速な字幕検索システム</p>
         </div>
       </div>
-
-      <div class="flex items-center gap-4 flex-wrap">
+      <div class="flex items-center gap-4">
         <div class="bg-[var(--bg-inner)] p-1 rounded-xl border border-[var(--border-color)] flex items-center gap-1">
-          <button onclick="changeTheme('purple')" class="w-6 h-6 rounded-lg bg-[#4c1d95] border border-purple-400/40 hover:scale-110 transition-all"></button>
-          <button onclick="changeTheme('white')" class="w-6 h-6 rounded-lg bg-white border border-slate-300 hover:scale-110 transition-all"></button>
-          <button onclick="changeTheme('black')" class="w-6 h-6 rounded-lg bg-black border border-neutral-700 hover:scale-110 transition-all"></button>
-          <button onclick="changeTheme('pink')" class="w-6 h-6 rounded-lg bg-[#be185d] border border-pink-400/40 hover:scale-110 transition-all"></button>
+          <button onclick="changeTheme('purple')" class="w-6 h-6 rounded-lg bg-[#4c1d95] border border-purple-400/40"></button>
+          <button onclick="changeTheme('white')" class="w-6 h-6 rounded-lg bg-white border border-slate-300"></button>
+          <button onclick="changeTheme('black')" class="w-6 h-6 rounded-lg bg-black border border-neutral-700"></button>
+          <button onclick="changeTheme('pink')" class="w-6 h-6 rounded-lg bg-[#be185d] border border-pink-400/40"></button>
         </div>
         <div id="connection-status" class="flex items-center gap-2 text-xs text-amber-400 font-bold">
-          <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-          データ読み込み中...
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>データ読み込み中...
         </div>
       </div>
     </div>
@@ -117,50 +46,46 @@
 
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 flex flex-col lg:flex-row gap-6">
     <div class="flex-1 flex flex-col gap-4 lg:w-3/5">
-      <div class="bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-color)] shadow-xl transition-all duration-200">
+      <div class="bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-color)] shadow-xl">
         <label for="search-input" class="block text-sm font-medium text-[var(--text-muted)] mb-2">発言内容から検索</label>
         <div class="relative flex gap-2">
-          <input type="text" id="search-input" placeholder="「サキュバス」や「牛乳」など..." class="flex-1 bg-[var(--bg-inner)] border border-[var(--border-color)] rounded-xl py-3 pl-4 pr-12 text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--text-accent)] transition-all">
-          <button id="search-btn" class="px-6 py-3 bg-[var(--bg-accent)] hover:bg-[var(--bg-accent-hover)] text-white font-bold rounded-xl transition-all active:scale-95">検索</button>
+          <input type="text" id="search-input" placeholder="検索ワードを入力..." class="flex-1 bg-[var(--bg-inner)] border border-[var(--border-color)] rounded-xl py-3 pl-4 text-[var(--text-main)] focus:outline-none">
+          <button id="search-btn" class="px-6 py-3 bg-[var(--bg-accent)] hover:bg-[var(--bg-accent-hover)] text-white font-bold rounded-xl transition-all">検索</button>
         </div>
       </div>
-
       <div class="flex items-center justify-between px-2 text-xs text-[var(--text-muted)]">
         <div id="results-count">検索結果: 0 件</div>
-        <div id="search-target-summary">JSONデータをロード中...</div>
+        <div id="search-target-summary">準備中...</div>
       </div>
-
-      <div id="results-container" class="space-y-4 overflow-y-auto max-h-[60vh] lg:max-h-[calc(100vh-320px)] pr-2">
-        <div class="text-center py-12 bg-[var(--bg-card)]/30 border border-[var(--border-color)] rounded-2xl text-[var(--text-muted)]">
-          データを読み込んでいます。少々お待ちください...
-        </div>
-      </div>
+      <div id="results-container" class="space-y-4 overflow-y-auto max-h-[60vh] pr-2"></div>
     </div>
 
     <div class="lg:w-2/5 flex flex-col gap-4">
       <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] overflow-hidden shadow-2xl sticky top-24">
         <div class="p-4 bg-[var(--bg-header)] border-b border-[var(--border-color)] flex items-center justify-between">
-          <h3 class="font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
-            <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.11C19.518 3.545 12 3.545 12 3.545s-7.518 0-9.388.507a3.003 3.003 0 0 0-2.11 2.11C0 8.033 0 12 0 12s0 3.967.502 5.837a3.003 3.003 0 0 0 2.11 2.11c1.87.507 9.388.507 9.388.507s7.518 0 9.388-.507a3.003 3.003 0 0 0 2.11-2.11C24 15.967 24 12 24 12s0-3.967-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-            YouTube 連動
-          </h3>
+          <h3 class="font-bold text-sm flex items-center gap-2">YouTube 連動</h3>
           <span id="player-status" class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2.5 py-0.5 rounded border border-[var(--border-color)] font-bold">API準備中</span>
         </div>
         <div class="relative w-full aspect-video bg-black"><div id="youtube-player" class="absolute inset-0 w-full h-full"></div></div>
         <div class="p-4 bg-[var(--bg-inner)]">
-          <h4 id="current-video-title" class="font-bold text-sm text-[var(--text-main)] line-clamp-2">動画を選択してください</h4>
+          <h4 id="current-video-title" class="font-bold text-sm line-clamp-2">動画を選択してください</h4>
           <div class="mt-4 pt-3 border-t border-[var(--border-color)] flex items-center justify-between">
             <span id="video-id-badge" class="text-xs text-[var(--text-muted)] font-mono">Video ID: ---</span>
-            <a id="external-link" href="#" target="_blank" class="text-xs text-[var(--text-accent)] hover:text-[var(--text-main)] flex items-center gap-1 transition">YouTubeで直接開く</a>
+            <a id="external-link" href="#" target="_blank" class="text-xs text-[var(--text-accent)] hover:underline">YouTubeで直接開く</a>
           </div>
         </div>
       </div>
     </div>
   </main>
 
-<script src="https://www.youtube.com/iframe_api"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  
   <script>
     let fileList = []; 
+    const DEFAULT_VIDEO_ID = "Oz_WA5PcLRE"; 
+    let ytPlayer = null;
+    let isPlayerReady = false;
+
     const statusBadge = document.getElementById('connection-status');
     const targetSummary = document.getElementById('search-target-summary');
     const resultsContainer = document.getElementById('results-container');
@@ -168,160 +93,126 @@
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
 
+    // テーマ切り替え
     function changeTheme(themeName) {
       document.documentElement.setAttribute('data-theme', themeName);
       localStorage.setItem('selected-theme', themeName);
     }
-    const savedTheme = localStorage.getItem('selected-theme') || 'purple';
-    changeTheme(savedTheme);
+    changeTheme(localStorage.getItem('selected-theme') || 'purple');
 
-    // --- 初期化: JSONファイルの一覧を取得 ---
+    // --- YouTube API 連動 ---
+    function onYouTubeIframeAPIReady() {
+      ytPlayer = new YT.Player('youtube-player', {
+        videoId: DEFAULT_VIDEO_ID,
+        playerVars: { 'playsinline': 1, 'rel': 0 },
+        events: {
+          'onReady': () => {
+            isPlayerReady = true;
+            document.getElementById('player-status').textContent = "連動可能";
+            document.getElementById('player-status').className = "text-xs bg-emerald-900 text-emerald-300 px-2.5 py-0.5 rounded font-bold border border-emerald-700/50";
+            document.getElementById('video-id-badge').textContent = `Video ID: ${DEFAULT_VIDEO_ID}`;
+          }
+        }
+      });
+    }
+
+    // --- データ初期化 ---
     async function initSystem() {
       try {
-        // data/file_list.json を読み込む
-        // GitHub Pages の環境で確実に読み込むため相対パスを指定
         const response = await fetch('./data/file_list.json');
-        if (!response.ok) throw new Error('File list not found');
+        if (!response.ok) throw new Error('data/file_list.jsonが見つかりません');
         fileList = await response.json();
         
-        statusBadge.textContent = "検索準備完了";
+        statusBadge.textContent = "準備完了";
         statusBadge.className = "flex items-center gap-2 text-xs text-emerald-400 font-bold";
-        targetSummary.textContent = `${fileList.length} ヶ月分のデータを対象にします`;
+        targetSummary.textContent = `${fileList.length} ヶ月分のデータをロードしました`;
         renderEmptyState();
       } catch (err) {
-        console.error("Initialization failed:", err);
-        statusBadge.textContent = "初期化失敗";
-        statusBadge.className = "flex items-center gap-2 text-xs text-red-500 font-bold";
-        targetSummary.innerHTML = `<span class="text-red-400">data/file_list.json が見つかりません。フォルダ構成を確認してください。</span>`;
+        console.error(err);
+        statusBadge.textContent = "データ読込失敗";
+        statusBadge.className = "text-red-500 font-bold";
+        targetSummary.innerHTML = `<span class="text-red-400">${err.message}</span>`;
       }
     }
-    window.addEventListener('DOMContentLoaded', initSystem);
 
-    // --- 検索ロジック: ファイルを1つずつ読み込んで逐次検索 ---
+    // --- 検索機能 ---
     async function triggerSearch() {
       const query = searchInput.value.trim().toLowerCase();
-      if (!query) {
-        renderEmptyState();
-        return;
-      }
+      if (!query) return renderEmptyState();
 
       searchBtn.textContent = "検索中...";
       searchBtn.disabled = true;
-      resultsContainer.innerHTML = ""; 
+      resultsContainer.innerHTML = "";
       let totalMatches = 0;
 
       for (const filePath of fileList) {
         try {
-          // fetchのパスを確実にするために ./ を付与
-          const cleanPath = filePath.startsWith('./') ? filePath : './' + filePath;
-          targetSummary.textContent = `${cleanPath.replace('./data/', '')} を検索中...`;
+          const path = filePath.startsWith('./') ? filePath : './' + filePath;
+          targetSummary.textContent = `${path.replace('./data/', '')} を検索中...`;
           
-          const res = await fetch(cleanPath);
+          const res = await fetch(path);
           const monthData = await res.json();
           
-          const matches = [];
-          monthData.forEach((item, index) => {
-            if (item.txt.toLowerCase().includes(query)) {
-              matches.push({
-                before: (index > 0) ? monthData[index-1] : null,
-                current: item,
-                after: (index < monthData.length - 1) ? monthData[index+1] : null
-              });
-            }
-          });
+          const matches = monthData.filter(item => item.txt.toLowerCase().includes(query)).map((item, idx, arr) => ({
+            before: arr[idx-1] || null,
+            current: item,
+            after: arr[idx+1] || null
+          }));
 
           if (matches.length > 0) {
             totalMatches += matches.length;
             renderBatchResults(matches, query);
             resultsCount.textContent = `検索結果: ${totalMatches} 件`;
           }
-        } catch (e) {
-          console.error(`Error searching ${filePath}:`, e);
-        }
+        } catch (e) { console.error(e); }
       }
-
-      targetSummary.textContent = `検索完了（対象: ${fileList.length} ファイル）`;
+      targetSummary.textContent = "検索完了";
       searchBtn.textContent = "検索";
       searchBtn.disabled = false;
-
-      if (totalMatches === 0) {
-        resultsContainer.innerHTML = `<div class="text-center py-12 bg-[var(--bg-card)]/30 border border-[var(--border-color)] rounded-2xl"><p class="text-[var(--text-muted)]">「${query}」に一致する発言はありませんでした。</p></div>`;
-      }
     }
 
     function renderBatchResults(matches, query) {
       let html = '';
-      matches.forEach(match => {
-        const { before, current, after } = match;
-        const timeStr = formatTime(current.sec);
+      matches.forEach(m => {
+        const { before, current, after } = m;
         html += `
-          <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-4 hover:border-[var(--text-accent)]/50 transition-all shadow-lg group">
-            <div class="flex items-center justify-between gap-3 mb-3 pb-2 border-b border-[var(--border-color)]/50">
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="w-16 h-10 bg-black rounded overflow-hidden border border-[var(--border-color)]">
-                  <img src="https://i.ytimg.com/vi/${current.id}/hqdefault.jpg" class="w-full h-full object-cover" loading="lazy">
-                </div>
-                <div class="min-w-0 flex-1">
-                  <p class="text-xs text-[var(--text-main)] font-bold truncate">${current.ttl}</p>
-                  <p class="text-[10px] text-[var(--text-muted)] mt-0.5">📅 ${formatDate(current.dt)}</p>
-                </div>
+          <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-4 shadow-lg">
+            <div class="flex items-center justify-between mb-3 border-b border-[var(--border-color)] pb-2">
+              <div class="flex items-center gap-3 overflow-hidden">
+                <img src="https://i.ytimg.com/vi/${current.id}/hqdefault.jpg" class="w-16 h-10 object-cover rounded">
+                <div class="truncate"><p class="text-xs font-bold truncate">${current.ttl}</p><p class="text-[10px] text-[var(--text-muted)]">${formatDate(current.dt)}</p></div>
               </div>
-              <button onclick="seekAndPlay('${current.id}', ${current.sec})" class="bg-[var(--bg-accent)] hover:bg-[var(--bg-accent-hover)] text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow-md active:scale-95 transition-all flex items-center gap-1 shrink-0">
-                再生
-              </button>
+              <button onclick="seekAndPlay('${current.id}', ${current.sec})" class="bg-[var(--bg-accent)] text-white text-xs px-3 py-1.5 rounded-lg font-bold shrink-0">再生</button>
             </div>
-            <div class="space-y-2 text-sm">
-              ${before ? `<div class="flex items-start gap-2 text-[var(--text-muted)]/50 text-xs"><span class="font-mono text-[10px] bg-[var(--bg-inner)] px-1 py-0.5 rounded">${formatTime(before.sec)}</span><p class="flex-1 line-clamp-1">${before.txt}</p></div>` : ''}
-              <div class="flex items-start gap-2 bg-[var(--bg-inner)] p-2.5 rounded-xl border border-[var(--border-color)]">
-                <span class="font-mono text-xs bg-[var(--bg-accent)] text-white px-1.5 py-0.5 rounded-md">${timeStr}</span>
-                <p class="flex-1 text-[var(--text-main)] font-medium leading-relaxed">${highlightText(current.txt, query)}</p>
+            <div class="space-y-1 text-sm">
+              ${before ? `<p class="text-[10px] text-[var(--text-muted)] opacity-50 truncate">${before.txt}</p>` : ''}
+              <div class="bg-[var(--bg-inner)] p-2 rounded-lg border border-[var(--border-color)]">
+                <span class="text-[10px] bg-[var(--bg-accent)] text-white px-1 rounded mr-2">${formatTime(current.sec)}</span>
+                <p class="inline">${highlightText(current.txt, query)}</p>
               </div>
-              ${after ? `<div class="flex items-start gap-2 text-[var(--text-muted)]/50 text-xs"><span class="font-mono text-[10px] bg-[var(--bg-inner)] px-1 py-0.5 rounded">${formatTime(after.sec)}</span><p class="flex-1 line-clamp-1">${after.txt}</p></div>` : ''}
+              ${after ? `<p class="text-[10px] text-[var(--text-muted)] opacity-50 truncate">${after.txt}</p>` : ''}
             </div>
           </div>`;
       });
       resultsContainer.insertAdjacentHTML('beforeend', html);
     }
 
-    // --- YouTube API 連動設定 ---
-    let ytPlayer = null;
-    let isPlayerReady = false;
-    const DEFAULT_VIDEO_ID = "Oz_WA5PcLRE"; 
-
-    function onYouTubeIframeAPIReady() {
-      ytPlayer = new YT.Player('youtube-player', {
-        videoId: DEFAULT_VIDEO_ID,
-        playerVars: { 'playsinline': 1, 'rel': 0 },
-        events: {
-          'onReady': (event) => {
-            isPlayerReady = true;
-            document.getElementById('player-status').textContent = "連動可能";
-            document.getElementById('player-status').className = "text-xs bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded font-bold";
-            document.getElementById('video-id-badge').textContent = `Video ID: ${DEFAULT_VIDEO_ID}`;
-          },
-          'onError': (e) => {
-            console.error("YouTube Player Error:", e);
-            document.getElementById('player-status').textContent = "エラー";
-          }
-        }
-      });
-    }
-
-    function seekAndPlay(videoId, seconds) {
+    function seekAndPlay(vId, sec) {
       if (!isPlayerReady) return;
-      ytPlayer.loadVideoById({ videoId: videoId, startSeconds: seconds });
+      ytPlayer.loadVideoById({ videoId: vId, startSeconds: sec });
       document.getElementById('current-video-title').textContent = "動画を再生中...";
-      document.getElementById('video-id-badge').textContent = `Video ID: ${videoId}`;
-      document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${videoId}&t=${seconds}s`;
+      document.getElementById('video-id-badge').textContent = `Video ID: ${vId}`;
+      document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${vId}&t=${sec}s`;
     }
 
-    function formatTime(s) { const h=Math.floor(s/3600); const m=Math.floor((s%3600)/60); const sec=s%60; return h>0 ? `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}` : `${m}:${String(sec).padStart(2,'0')}`; }
-    function formatDate(d) { return d.length===8 ? `${d.substring(0,4)}/${d.substring(4,6)}/${d.substring(6,8)}` : d; }
-    function highlightText(t, q) { const r = new RegExp(`(${q})`, 'gi'); return t.replace(r, `<mark class="bg-[var(--highlight-bg)] text-[var(--highlight-text)] px-1 rounded">$1</mark>`); }
-    function renderEmptyState() { resultsCount.textContent = "検索結果: 0 件"; resultsContainer.innerHTML = `<div class="text-center py-12 bg-[var(--bg-card)]/30 border border-[var(--border-color)] rounded-2xl"><p class="text-[var(--text-muted)]">キーワードを入れて検索ボタンを押してください。</p></div>`; }
-    
+    function formatTime(s) { const m=Math.floor(s/60); const sec=s%60; return `${m}:${String(sec).padStart(2,'0')}`; }
+    function formatDate(d) { return `${d.substring(0,4)}/${d.substring(4,6)}/${d.substring(6,8)}`; }
+    function highlightText(t, q) { return t.replace(new RegExp(`(${q})`, 'gi'), `<mark class="bg-[var(--highlight-bg)] text-[var(--highlight-text)] px-1 rounded">$1</mark>`); }
+    function renderEmptyState() { resultsContainer.innerHTML = `<div class="text-center py-12 text-[var(--text-muted)]">キーワードを入力して検索してください。</div>`; }
+
     searchBtn.addEventListener('click', triggerSearch);
-    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') triggerSearch(); });
+    searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') triggerSearch(); });
+    window.addEventListener('DOMContentLoaded', initSystem);
   </script>
 </body>
 </html>
