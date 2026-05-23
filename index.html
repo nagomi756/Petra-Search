@@ -282,24 +282,54 @@
       resultsContainer.insertAdjacentHTML('beforeend', html);
     }
 
-    // --- その他ヘルパー関数 (変更なし) ---
+// --- YouTube API 連動設定 ---
     let ytPlayer = null;
     let isPlayerReady = false;
+
+    // 初期表示用の動画ID (例: 最新の配信や代表的な動画IDを入れておく)
+    const DEFAULT_VIDEO_ID = "Oz_WA5PcLRE"; 
+
     function onYouTubeIframeAPIReady() {
-      ytPlayer = new YT.Player('youtube-player', { videoId: "", events: { 'onReady': () => { isPlayerReady = true; document.getElementById('player-status').textContent = "連動可能"; document.getElementById('player-status').className = "text-xs bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded font-bold"; } } });
+      ytPlayer = new YT.Player('youtube-player', {
+        videoId: DEFAULT_VIDEO_ID, // 起動時に表示する動画を指定
+        playerVars: {
+          'playsinline': 1,
+          'rel': 0
+        },
+        events: {
+          'onReady': (event) => {
+            isPlayerReady = true;
+            document.getElementById('player-status').textContent = "連動可能";
+            document.getElementById('player-status').className = "text-xs bg-emerald-950 text-emerald-300 border border-emerald-700/50 px-2.5 py-0.5 rounded font-bold";
+            
+            // 初期状態の情報を表示
+            document.getElementById('video-id-badge').textContent = `Video ID: ${DEFAULT_VIDEO_ID}`;
+          },
+          'onError': (e) => {
+            console.error("YouTube Player Error:", e);
+            document.getElementById('player-status').textContent = "エラー";
+            document.getElementById('player-status').className = "text-xs bg-red-950 text-red-300 border border-red-700/50 px-2.5 py-0.5 rounded font-bold";
+          }
+        }
+      });
     }
+
     function seekAndPlay(videoId, seconds) {
-      if (!isPlayerReady) return;
-      ytPlayer.loadVideoById({ videoId, startSeconds: seconds });
+      if (!isPlayerReady) {
+        console.warn("Player is not ready yet.");
+        return;
+      }
+      
+      // 動画を読み込んで指定時間から再生
+      ytPlayer.loadVideoById({
+        videoId: videoId,
+        startSeconds: seconds
+      });
+      
       document.getElementById('current-video-title').textContent = "動画を再生中...";
       document.getElementById('video-id-badge').textContent = `Video ID: ${videoId}`;
+      document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${videoId}&t=${seconds}s`;
     }
-    function formatTime(s) { const h=Math.floor(s/3600); const m=Math.floor((s%3600)/60); const sec=s%60; return h>0 ? `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}` : `${m}:${String(sec).padStart(2,'0')}`; }
-    function formatDate(d) { return d.length===8 ? `${d.substring(0,4)}/${d.substring(4,6)}/${d.substring(6,8)}` : d; }
-    function highlightText(t, q) { const r = new RegExp(`(${q})`, 'gi'); return t.replace(r, `<mark class="bg-[var(--highlight-bg)] text-[var(--highlight-text)] px-1 rounded">$1</mark>`); }
-    function renderEmptyState() { resultsCount.textContent = "検索結果: 0 件"; resultsContainer.innerHTML = `<div class="text-center py-12 bg-[var(--bg-card)]/30 border border-[var(--border-color)] rounded-2xl"><p class="text-[var(--text-muted)]">キーワードを入れて検索ボタンを押してください。</p></div>`; }
-    searchBtn.addEventListener('click', triggerSearch);
-    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') triggerSearch(); });
   </script>
 </body>
 </html>
