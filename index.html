@@ -1,41 +1,127 @@
 <!DOCTYPE html>
 <html lang="ja" data-theme="purple">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ペトラナイトメア - 字幕横断検索システム (Web公開版)</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap"
+    rel="stylesheet">
+
   <style>
     /* --- テーマ定義 --- */
-    :root, [data-theme="purple"] { --bg-main: #0b0713; --bg-card: #150e26; --bg-header: #120a21; --bg-inner: #0d0718; --bg-accent: #4c1d95; --bg-accent-hover: #6d28d9; --text-main: #f3f1f6; --text-muted: #a78bfa; --text-accent: #c084fc; --border-color: rgba(139, 92, 246, 0.25); --highlight-bg: rgba(234, 179, 8, 0.3); --highlight-text: #fef08a; --shadow-color: rgba(76, 29, 149, 0.2); }
-    [data-theme="white"] { --bg-main: #f8fafc; --bg-card: #ffffff; --bg-header: #e2e8f0; --bg-inner: #f1f5f9; --bg-accent: #6d28d9; --bg-accent-hover: #5b21b6; --text-main: #0f172a; --text-muted: #475569; --text-accent: #7c3aed; --border-color: rgba(109, 40, 217, 0.15); --highlight-bg: rgba(234, 179, 8, 0.25); --highlight-text: #854d0e; --shadow-color: rgba(0, 0, 0, 0.05); }
-    [data-theme="black"] { --bg-main: #000000; --bg-card: #0f0f0f; --bg-header: #141414; --bg-inner: #070707; --bg-accent: #262626; --bg-accent-hover: #404040; --text-main: #ffffff; --text-muted: #a3a3a3; --text-accent: #e5e5e5; --border-color: rgba(255, 255, 255, 0.1); --highlight-bg: rgba(234, 179, 8, 0.4); --highlight-text: #fef08a; --shadow-color: rgba(0, 0, 0, 0.8); }
-    [data-theme="pink"] { --bg-main: #0d0408; --bg-card: #200814; --bg-header: #17050e; --bg-inner: #12030b; --bg-accent: #be185d; --bg-accent-hover: #db2777; --text-main: #fdf2f8; --text-muted: #f472b6; --text-accent: #fbcfe8; --border-color: rgba(219, 39, 119, 0.25); --highlight-bg: rgba(245, 158, 11, 0.35); --highlight-text: #fde68a; --shadow-color: rgba(190, 24, 93, 0.25); }
-    body { font-family: 'Noto Sans JP', sans-serif; background-color: var(--bg-main); color: var(--text-main); transition: background-color 0.25s ease, color 0.25s ease; }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg-inner); }
-    ::-webkit-scrollbar-thumb { background: var(--bg-accent); border-radius: 3px; }
+    :root,
+    [data-theme="purple"] {
+      --bg-main: #0b0713;
+      --bg-card: #150e26;
+      --bg-header: #120a21;
+      --bg-inner: #0d0718;
+      --bg-accent: #4c1d95;
+      --bg-accent-hover: #6d28d9;
+      --text-main: #f3f1f6;
+      --text-muted: #a78bfa;
+      --text-accent: #c084fc;
+      --border-color: rgba(139, 92, 246, 0.25);
+      --highlight-bg: rgba(234, 179, 8, 0.3);
+      --highlight-text: #fef08a;
+      --shadow-color: rgba(76, 29, 149, 0.2);
+    }
+
+    [data-theme="white"] {
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-header: #e2e8f0;
+      --bg-inner: #f1f5f9;
+      --bg-accent: #6d28d9;
+      --bg-accent-hover: #5b21b6;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-accent: #7c3aed;
+      --border-color: rgba(109, 40, 217, 0.15);
+      --highlight-bg: rgba(234, 179, 8, 0.25);
+      --highlight-text: #854d0e;
+      --shadow-color: rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="black"] {
+      --bg-main: #000000;
+      --bg-card: #0f0f0f;
+      --bg-header: #141414;
+      --bg-inner: #070707;
+      --bg-accent: #262626;
+      --bg-accent-hover: #404040;
+      --text-main: #ffffff;
+      --text-muted: #a3a3a3;
+      --text-accent: #e5e5e5;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --highlight-bg: rgba(234, 179, 8, 0.4);
+      --highlight-text: #fef08a;
+      --shadow-color: rgba(0, 0, 0, 0.8);
+    }
+
+    [data-theme="pink"] {
+      --bg-main: #0d0408;
+      --bg-card: #200814;
+      --bg-header: #17050e;
+      --bg-inner: #12030b;
+      --bg-accent: #be185d;
+      --bg-accent-hover: #db2777;
+      --text-main: #fdf2f8;
+      --text-muted: #f472b6;
+      --text-accent: #fbcfe8;
+      --border-color: rgba(219, 39, 119, 0.25);
+      --highlight-bg: rgba(245, 158, 11, 0.35);
+      --highlight-text: #fde68a;
+      --shadow-color: rgba(190, 24, 93, 0.25);
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-inner);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg-accent);
+      border-radius: 3px;
+    }
   </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
 
-  <header class="border-b border-[var(--border-color)] bg-[var(--bg-header)]/90 backdrop-blur sticky top-0 z-50 px-4 py-3">
+  <header
+    class="border-b border-[var(--border-color)] bg-[var(--bg-header)]/90 backdrop-blur sticky top-0 z-50 px-4 py-3">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-800 to-indigo-900 border border-purple-500/50 flex items-center justify-center font-bold text-purple-200">P</div>
+        <div
+          class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-800 to-indigo-900 border border-purple-500/50 flex items-center justify-center font-bold text-purple-200">
+          P</div>
         <div>
-          <h1 class="text-lg font-bold tracking-wider text-[var(--text-accent)] flex items-center gap-2">ペトラナイトメア <span class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2 py-0.5 rounded-full border border-[var(--border-color)]">Web公開版</span></h1>
+          <h1 class="text-lg font-bold tracking-wider text-[var(--text-accent)] flex items-center gap-2">ペトラナイトメア <span
+              class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2 py-0.5 rounded-full border border-[var(--border-color)]">Web公開版</span>
+          </h1>
           <p class="text-xs text-[var(--text-muted)]">ブラウザ単体で動作する軽量・高速な字幕検索システム</p>
         </div>
       </div>
       <div class="flex items-center gap-4">
         <div class="bg-[var(--bg-inner)] p-1 rounded-xl border border-[var(--border-color)] flex items-center gap-1">
-          <button onclick="changeTheme('purple')" class="w-6 h-6 rounded-lg bg-[#4c1d95] border border-purple-400/40"></button>
+          <button onclick="changeTheme('purple')"
+            class="w-6 h-6 rounded-lg bg-[#4c1d95] border border-purple-400/40"></button>
           <button onclick="changeTheme('white')" class="w-6 h-6 rounded-lg bg-white border border-slate-300"></button>
           <button onclick="changeTheme('black')" class="w-6 h-6 rounded-lg bg-black border border-neutral-700"></button>
-          <button onclick="changeTheme('pink')" class="w-6 h-6 rounded-lg bg-[#be185d] border border-pink-400/40"></button>
+          <button onclick="changeTheme('pink')"
+            class="w-6 h-6 rounded-lg bg-[#be185d] border border-pink-400/40"></button>
         </div>
         <div id="connection-status" class="flex items-center gap-2 text-xs text-amber-400 font-bold">
           <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>データ読み込み中...
@@ -49,8 +135,10 @@
       <div class="bg-[var(--bg-card)] p-5 rounded-2xl border border-[var(--border-color)] shadow-xl">
         <label for="search-input" class="block text-sm font-medium text-[var(--text-muted)] mb-2">発言内容から検索</label>
         <div class="relative flex gap-2">
-          <input type="text" id="search-input" placeholder="検索ワードを入力..." class="flex-1 bg-[var(--bg-inner)] border border-[var(--border-color)] rounded-xl py-3 pl-4 text-[var(--text-main)] focus:outline-none">
-          <button id="search-btn" class="px-6 py-3 bg-[var(--bg-accent)] hover:bg-[var(--bg-accent-hover)] text-white font-bold rounded-xl transition-all">検索</button>
+          <input type="text" id="search-input" placeholder="検索ワードを入力..."
+            class="flex-1 bg-[var(--bg-inner)] border border-[var(--border-color)] rounded-xl py-3 pl-4 text-[var(--text-main)] focus:outline-none">
+          <button id="search-btn"
+            class="px-6 py-3 bg-[var(--bg-accent)] hover:bg-[var(--bg-accent-hover)] text-white font-bold rounded-xl transition-all">検索</button>
         </div>
       </div>
       <div class="flex items-center justify-between px-2 text-xs text-[var(--text-muted)]">
@@ -61,17 +149,22 @@
     </div>
 
     <div class="lg:w-2/5 flex flex-col gap-4">
-      <div class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] overflow-hidden shadow-2xl sticky top-24">
+      <div
+        class="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-color)] overflow-hidden shadow-2xl sticky top-24">
         <div class="p-4 bg-[var(--bg-header)] border-b border-[var(--border-color)] flex items-center justify-between">
           <h3 class="font-bold text-sm flex items-center gap-2">YouTube 連動</h3>
-          <span id="player-status" class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2.5 py-0.5 rounded border border-[var(--border-color)] font-bold">API準備中</span>
+          <span id="player-status"
+            class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2.5 py-0.5 rounded border border-[var(--border-color)] font-bold">API準備中</span>
         </div>
-        <div class="relative w-full aspect-video bg-black"><div id="youtube-player" class="absolute inset-0 w-full h-full"></div></div>
+        <div class="relative w-full aspect-video bg-black">
+          <div id="youtube-player" class="absolute inset-0 w-full h-full"></div>
+        </div>
         <div class="p-4 bg-[var(--bg-inner)]">
           <h4 id="current-video-title" class="font-bold text-sm line-clamp-2">動画を選択してください</h4>
           <div class="mt-4 pt-3 border-t border-[var(--border-color)] flex items-center justify-between">
             <span id="video-id-badge" class="text-xs text-[var(--text-muted)] font-mono">Video ID: ---</span>
-            <a id="external-link" href="#" target="_blank" class="text-xs text-[var(--text-accent)] hover:underline">YouTubeで直接開く</a>
+            <a id="external-link" href="#" target="_blank"
+              class="text-xs text-[var(--text-accent)] hover:underline">YouTubeで直接開く</a>
           </div>
         </div>
       </div>
@@ -79,10 +172,10 @@
   </main>
 
   <script src="https://www.youtube.com/iframe_api"></script>
-  
+
   <script>
-    let fileList = []; 
-    const DEFAULT_VIDEO_ID = "Oz_WA5PcLRE"; 
+    let fileList = [];
+    const DEFAULT_VIDEO_ID = "Oz_WA5PcLRE";
     let ytPlayer = null;
     let isPlayerReady = false;
 
@@ -122,7 +215,7 @@
         const response = await fetch('./data/file_list.json');
         if (!response.ok) throw new Error('data/file_list.jsonが見つかりません');
         fileList = await response.json();
-        
+
         statusBadge.textContent = "準備完了";
         statusBadge.className = "flex items-center gap-2 text-xs text-emerald-400 font-bold";
         targetSummary.textContent = `${fileList.length} ヶ月分のデータをロードしました`;
@@ -149,15 +242,35 @@
         try {
           const path = filePath.startsWith('./') ? filePath : './' + filePath;
           targetSummary.textContent = `${path.replace('./data/', '')} を検索中...`;
-          
+
           const res = await fetch(path);
           const monthData = await res.json();
-          
-          const matches = monthData.filter(item => item.txt.toLowerCase().includes(query)).map((item, idx, arr) => ({
-            before: arr[idx-1] || null,
-            current: item,
-            after: arr[idx+1] || null
-          }));
+
+          // --- 修正後のコード ---
+          const matches = [];
+          let lastAddedTime = -10; // 前回の採用時間
+          let lastVideoId = "";    // 前回の動画ID
+
+          monthData.forEach((item, index) => {
+            // 検索ワードが含まれているかチェック
+            if (item.txt.toLowerCase().includes(query)) {
+              // 【重複除外ロジック】同じ動画内で、前回のヒットから10秒以内の場合はスキップ
+              if (item.id === lastVideoId && (item.sec - lastAddedTime) <= 10) {
+                return;
+              }
+
+              // 採用する場合の処理
+              matches.push({
+                before: (index > 0) ? monthData[index - 1] : null,
+                current: item,
+                after: (index < monthData.length - 1) ? monthData[index + 1] : null
+              });
+
+              // 今回採用した時間とIDを記録
+              lastAddedTime = item.sec;
+              lastVideoId = item.id;
+            }
+          });
 
           if (matches.length > 0) {
             totalMatches += matches.length;
@@ -205,14 +318,15 @@
       document.getElementById('external-link').href = `https://www.youtube.com/watch?v=${vId}&t=${sec}s`;
     }
 
-    function formatTime(s) { const m=Math.floor(s/60); const sec=s%60; return `${m}:${String(sec).padStart(2,'0')}`; }
-    function formatDate(d) { return `${d.substring(0,4)}/${d.substring(4,6)}/${d.substring(6,8)}`; }
+    function formatTime(s) { const m = Math.floor(s / 60); const sec = s % 60; return `${m}:${String(sec).padStart(2, '0')}`; }
+    function formatDate(d) { return `${d.substring(0, 4)}/${d.substring(4, 6)}/${d.substring(6, 8)}`; }
     function highlightText(t, q) { return t.replace(new RegExp(`(${q})`, 'gi'), `<mark class="bg-[var(--highlight-bg)] text-[var(--highlight-text)] px-1 rounded">$1</mark>`); }
     function renderEmptyState() { resultsContainer.innerHTML = `<div class="text-center py-12 text-[var(--text-muted)]">キーワードを入力して検索してください。</div>`; }
 
     searchBtn.addEventListener('click', triggerSearch);
-    searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') triggerSearch(); });
+    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') triggerSearch(); });
     window.addEventListener('DOMContentLoaded', initSystem);
   </script>
 </body>
+
 </html>
