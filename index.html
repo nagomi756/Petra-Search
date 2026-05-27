@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ペトラナイトメア - 字幕横断検索システム (Cloudflare版)</title>
+  <title>ペトラナイトメア - 字幕検索システム</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap"
     rel="stylesheet">
@@ -109,9 +109,10 @@
           P</div>
         <div>
           <h1 class="text-lg font-bold tracking-wider text-[var(--text-accent)] flex items-center gap-2">ペトラナイトメア <span
-              class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2 py-0.5 rounded-full border border-[var(--border-color)]">データベース版</span>
+              class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2 py-0.5 rounded-full border border-[var(--border-color)]">Version 1.0</span>
           </h1>
-          <p class="text-xs text-[var(--text-muted)]">Cloudflare D1 連携により、高速・広範囲な字幕検索を実現</p>
+          <p class="text-xs text-[var(--text-muted)]">ペトラナイトメアのアーカイブから字幕データを検索できるシステム
+          </p>
         </div>
       </div>
       <div class="flex items-center gap-4">
@@ -146,6 +147,12 @@
         <div id="search-target-summary">データベース接続済み</div>
       </div>
       <div id="results-container" class="space-y-4 overflow-y-auto max-h-[60vh] pr-2"></div>
+      
+      <div id="more-container" class="mt-6 text-center hidden">
+        <button id="more-btn" class="px-8 py-3 bg-[var(--bg-inner)] border border-[var(--border-color)] text-[var(--text-muted)] font-bold rounded-xl hover:bg-[var(--bg-accent)] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[var(--bg-accent)]">
+          さらに読み込む
+        </button>
+      </div>
     </div>
 
     <div class="lg:w-2/5 flex flex-col gap-4">
@@ -175,10 +182,11 @@
 
   <script>
     const DEFAULT_VIDEO_ID = "Oz_WA5PcLRE";
-    const WORKER_URL = "https://search-api.nagomiclip.workers.dev"; // ★作成したWorkersのURLに変更してください
+    const WORKER_URL = "https://search-api.nagomiclip.workers.dev"; 
     
     let ytPlayer = null;
     let isPlayerReady = false;
+    let currentPage = 0; // 現在のページ管理
 
     const statusBadge = document.getElementById('connection-status');
     const targetSummary = document.getElementById('search-target-summary');
@@ -186,6 +194,8 @@
     const resultsCount = document.getElementById('results-count');
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
+    const moreContainer = document.getElementById('more-container');
+    const moreBtn = document.getElementById('more-btn');
 
     // テーマ切り替え
     function changeTheme(themeName) {
@@ -217,26 +227,45 @@
       renderEmptyState();
     }
 
-    // --- 検索機能 (Cloudflare Workers版) ---
+    // --- 検索機能 ---
+    
+    // 新規検索実行
     async function triggerSearch() {
+      currentPage = 0;
+      resultsContainer.innerHTML = "";
+      moreContainer.classList.add('hidden');
+      await executeSearch();
+    }
+
+    // 追加読み込み実行
+    async function loadMore() {
+      currentPage++;
+      await executeSearch(true);
+    }
+
+    // 検索処理本体
+    async function executeSearch(isAppend = false) {
       const query = searchInput.value.trim().toLowerCase();
       if (!query) return renderEmptyState();
 
-      searchBtn.textContent = "検索中...";
-      searchBtn.disabled = true;
-      resultsContainer.innerHTML = "";
+      if (!isAppend) {
+        searchBtn.textContent = "検索中...";
+        searchBtn.disabled = true;
+      } else {
+        moreBtn.textContent = "読み込み中...";
+        moreBtn.disabled = true;
+      }
       
       try {
-        targetSummary.textContent = "データベースを検索中...";
+        targetSummary.textContent = isAppend ? `${currentPage + 1}ページ目を読み込み中...` : "データベースを検索中...";
         
-        // Workersへ検索リクエストを送信
-        const response = await fetch(`${WORKER_URL}?q=${encodeURIComponent(query)}`);
+        // Workersへ検索リクエストを送信 (パラメータ p を付与)
+        const response = await fetch(`${WORKER_URL}?q=${encodeURIComponent(query)}&p=${currentPage}`);
         if (!response.ok) throw new Error("検索リクエストに失敗しました");
         
         const results = await response.json();
 
         if (results && results.length > 0) {
-          // 表示形式を合わせる (Workers版は単一行取得のため before/after は一旦 null)
           const formattedMatches = results.map(item => ({
             before: null,
             current: item,
@@ -244,18 +273,35 @@
           }));
 
           renderBatchResults(formattedMatches, query);
-          resultsCount.textContent = `検索結果: ${results.length} 件`;
+          
+          // 取得件数が100件なら次がある可能性が高い
+          if (results.length === 100) {
+            moreContainer.classList.remove('hidden');
+          } else {
+            moreContainer.classList.add('hidden');
+          }
+
+          const currentTotal = resultsContainer.querySelectorAll('.bg-\\[var\\(--bg-card\\)\\]').length;
+          resultsCount.textContent = `検索結果: ${currentTotal} 件を表示中`;
         } else {
-          resultsCount.textContent = `検索結果: 0 件`;
-          renderEmptyState();
+          if (!isAppend) {
+            resultsCount.textContent = `検索結果: 0 件`;
+            renderEmptyState();
+          } else {
+            moreContainer.classList.add('hidden');
+          }
         }
       } catch (e) {
         console.error(e);
-        resultsContainer.innerHTML = `<div class="text-center py-12 text-red-400">エラーが発生しました: ${e.message}</div>`;
+        if (!isAppend) {
+          resultsContainer.innerHTML = `<div class="text-center py-12 text-red-400">エラーが発生しました: ${e.message}</div>`;
+        }
       } finally {
         targetSummary.textContent = "検索完了";
         searchBtn.textContent = "検索";
         searchBtn.disabled = false;
+        moreBtn.textContent = "さらに読み込む";
+        moreBtn.disabled = false;
       }
     }
 
@@ -296,7 +342,6 @@
 
     function formatTime(s) { const m = Math.floor(s / 60); const sec = s % 60; return `${m}:${String(sec).padStart(2, '0')}`; }
     
-    // 日付形式の修正 (2024-05-01 などの形式に対応)
     function formatDate(d) { 
       if(!d) return "不明";
       return d.replace(/-/g, '/'); 
@@ -306,6 +351,7 @@
     function renderEmptyState() { resultsContainer.innerHTML = `<div class="text-center py-12 text-[var(--text-muted)]">キーワードを入力して検索してください。</div>`; }
 
     searchBtn.addEventListener('click', triggerSearch);
+    moreBtn.addEventListener('click', loadMore);
     searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') triggerSearch(); });
     window.addEventListener('DOMContentLoaded', initSystem);
   </script>
