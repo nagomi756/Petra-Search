@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ペトラナイトメア - 字幕横断検索システム (Web公開版)</title>
+  <title>ペトラナイトメア - 字幕横断検索システム (Cloudflare版)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap"
     rel="stylesheet">
@@ -109,9 +109,9 @@
           P</div>
         <div>
           <h1 class="text-lg font-bold tracking-wider text-[var(--text-accent)] flex items-center gap-2">ペトラナイトメア <span
-              class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2 py-0.5 rounded-full border border-[var(--border-color)]">簡易版</span>
+              class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2 py-0.5 rounded-full border border-[var(--border-color)]">データベース版</span>
           </h1>
-          <p class="text-xs text-[var(--text-muted)]">ペトラさんの発言をアーカイブから一挙に検索し、指定の瞬間から再生できるシステム</p>
+          <p class="text-xs text-[var(--text-muted)]">Cloudflare D1 連携により、高速・広範囲な字幕検索を実現</p>
         </div>
       </div>
       <div class="flex items-center gap-4">
@@ -124,7 +124,7 @@
             class="w-6 h-6 rounded-lg bg-[#be185d] border border-pink-400/40"></button>
         </div>
         <div id="connection-status" class="flex items-center gap-2 text-xs text-amber-400 font-bold">
-          <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>データ読み込み中...
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>接続確認中...
         </div>
       </div>
     </div>
@@ -143,7 +143,7 @@
       </div>
       <div class="flex items-center justify-between px-2 text-xs text-[var(--text-muted)]">
         <div id="results-count">検索結果: 0 件</div>
-        <div id="search-target-summary">準備中...</div>
+        <div id="search-target-summary">データベース接続済み</div>
       </div>
       <div id="results-container" class="space-y-4 overflow-y-auto max-h-[60vh] pr-2"></div>
     </div>
@@ -174,8 +174,9 @@
   <script src="https://www.youtube.com/iframe_api"></script>
 
   <script>
-    let fileList = [];
     const DEFAULT_VIDEO_ID = "Oz_WA5PcLRE";
+    const WORKER_URL = "https://search-api.nagomiclip.workers.dev"; // ★作成したWorkersのURLに変更してください
+    
     let ytPlayer = null;
     let isPlayerReady = false;
 
@@ -209,26 +210,14 @@
       });
     }
 
-    // --- データ初期化 ---
+    // --- システム初期化 ---
     async function initSystem() {
-      try {
-        const response = await fetch('./data/file_list.json');
-        if (!response.ok) throw new Error('data/file_list.jsonが見つかりません');
-        fileList = await response.json();
-
-        statusBadge.textContent = "準備完了";
-        statusBadge.className = "flex items-center gap-2 text-xs text-emerald-400 font-bold";
-        targetSummary.textContent = `${fileList.length} ヶ月分のデータをロードしました`;
-        renderEmptyState();
-      } catch (err) {
-        console.error(err);
-        statusBadge.textContent = "データ読込失敗";
-        statusBadge.className = "text-red-500 font-bold";
-        targetSummary.innerHTML = `<span class="text-red-400">${err.message}</span>`;
-      }
+      statusBadge.textContent = "オンライン";
+      statusBadge.className = "flex items-center gap-2 text-xs text-emerald-400 font-bold";
+      renderEmptyState();
     }
 
-    // --- 検索機能 ---
+    // --- 検索機能 (Cloudflare Workers版) ---
     async function triggerSearch() {
       const query = searchInput.value.trim().toLowerCase();
       if (!query) return renderEmptyState();
@@ -236,74 +225,61 @@
       searchBtn.textContent = "検索中...";
       searchBtn.disabled = true;
       resultsContainer.innerHTML = "";
-      let totalMatches = 0;
+      
+      try {
+        targetSummary.textContent = "データベースを検索中...";
+        
+        // Workersへ検索リクエストを送信
+        const response = await fetch(`${WORKER_URL}?q=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error("検索リクエストに失敗しました");
+        
+        const results = await response.json();
 
-      for (const filePath of fileList) {
-        try {
-          const path = filePath.startsWith('./') ? filePath : './' + filePath;
-          targetSummary.textContent = `${path.replace('./data/', '')} を検索中...`;
+        if (results && results.length > 0) {
+          // 表示形式を合わせる (Workers版は単一行取得のため before/after は一旦 null)
+          const formattedMatches = results.map(item => ({
+            before: null,
+            current: item,
+            after: null
+          }));
 
-          const res = await fetch(path);
-          const monthData = await res.json();
-
-          // --- 修正後のコード ---
-          const matches = [];
-          let lastAddedTime = -10; // 前回の採用時間
-          let lastVideoId = "";    // 前回の動画ID
-
-          monthData.forEach((item, index) => {
-            // 検索ワードが含まれているかチェック
-            if (item.txt.toLowerCase().includes(query)) {
-              // 【重複除外ロジック】同じ動画内で、前回のヒットから10秒以内の場合はスキップ
-              if (item.id === lastVideoId && (item.sec - lastAddedTime) <= 10) {
-                return;
-              }
-
-              // 採用する場合の処理
-              matches.push({
-                before: (index > 0) ? monthData[index - 1] : null,
-                current: item,
-                after: (index < monthData.length - 1) ? monthData[index + 1] : null
-              });
-
-              // 今回採用した時間とIDを記録
-              lastAddedTime = item.sec;
-              lastVideoId = item.id;
-            }
-          });
-
-          if (matches.length > 0) {
-            totalMatches += matches.length;
-            renderBatchResults(matches, query);
-            resultsCount.textContent = `検索結果: ${totalMatches} 件`;
-          }
-        } catch (e) { console.error(e); }
+          renderBatchResults(formattedMatches, query);
+          resultsCount.textContent = `検索結果: ${results.length} 件`;
+        } else {
+          resultsCount.textContent = `検索結果: 0 件`;
+          renderEmptyState();
+        }
+      } catch (e) {
+        console.error(e);
+        resultsContainer.innerHTML = `<div class="text-center py-12 text-red-400">エラーが発生しました: ${e.message}</div>`;
+      } finally {
+        targetSummary.textContent = "検索完了";
+        searchBtn.textContent = "検索";
+        searchBtn.disabled = false;
       }
-      targetSummary.textContent = "検索完了";
-      searchBtn.textContent = "検索";
-      searchBtn.disabled = false;
     }
 
     function renderBatchResults(matches, query) {
       let html = '';
       matches.forEach(m => {
-        const { before, current, after } = m;
+        const { current } = m;
         html += `
           <div class="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-4 shadow-lg">
             <div class="flex items-center justify-between mb-3 border-b border-[var(--border-color)] pb-2">
               <div class="flex items-center gap-3 overflow-hidden">
                 <img src="https://i.ytimg.com/vi/${current.id}/hqdefault.jpg" class="w-16 h-10 object-cover rounded">
-                <div class="truncate"><p class="text-xs font-bold truncate">${current.ttl}</p><p class="text-[10px] text-[var(--text-muted)]">${formatDate(current.dt)}</p></div>
+                <div class="truncate">
+                  <p class="text-xs font-bold truncate">${current.ttl}</p>
+                  <p class="text-[10px] text-[var(--text-muted)]">${formatDate(current.dt)}</p>
+                </div>
               </div>
               <button onclick="seekAndPlay('${current.id}', ${current.sec})" class="bg-[var(--bg-accent)] text-white text-xs px-3 py-1.5 rounded-lg font-bold shrink-0">再生</button>
             </div>
             <div class="space-y-1 text-sm">
-              ${before ? `<p class="text-[10px] text-[var(--text-muted)] opacity-50 truncate">${before.txt}</p>` : ''}
               <div class="bg-[var(--bg-inner)] p-2 rounded-lg border border-[var(--border-color)]">
                 <span class="text-[10px] bg-[var(--bg-accent)] text-white px-1 rounded mr-2">${formatTime(current.sec)}</span>
                 <p class="inline">${highlightText(current.txt, query)}</p>
               </div>
-              ${after ? `<p class="text-[10px] text-[var(--text-muted)] opacity-50 truncate">${after.txt}</p>` : ''}
             </div>
           </div>`;
       });
@@ -319,7 +295,13 @@
     }
 
     function formatTime(s) { const m = Math.floor(s / 60); const sec = s % 60; return `${m}:${String(sec).padStart(2, '0')}`; }
-    function formatDate(d) { return `${d.substring(0, 4)}/${d.substring(4, 6)}/${d.substring(6, 8)}`; }
+    
+    // 日付形式の修正 (2024-05-01 などの形式に対応)
+    function formatDate(d) { 
+      if(!d) return "不明";
+      return d.replace(/-/g, '/'); 
+    }
+
     function highlightText(t, q) { return t.replace(new RegExp(`(${q})`, 'gi'), `<mark class="bg-[var(--highlight-bg)] text-[var(--highlight-text)] px-1 rounded">$1</mark>`); }
     function renderEmptyState() { resultsContainer.innerHTML = `<div class="text-center py-12 text-[var(--text-muted)]">キーワードを入力して検索してください。</div>`; }
 
