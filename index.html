@@ -109,13 +109,20 @@
           P</div>
         <div>
           <h1 class="text-lg font-bold tracking-wider text-[var(--text-accent)] flex items-center gap-2">ペトラナイトメア <span
-              class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2 py-0.5 rounded-full border border-[var(--border-color)]">Version 1.0</span>
+              class="text-xs bg-[var(--bg-inner)] text-[var(--text-muted)] px-2 py-0.5 rounded-full border border-[var(--border-color)]">Version
+              1.0</span>
           </h1>
           <p class="text-xs text-[var(--text-muted)]">ペトラナイトメアのアーカイブから字幕データを検索できるシステム
           </p>
         </div>
       </div>
-      <div class="flex items-center gap-4">
+
+      <!-- <div class="flex items-center gap-4"> -->
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="flex flex-col items-end px-2 border-r border-[var(--border-color)] hidden sm:flex">
+          <span class="text-[10px] text-[var(--text-muted)] uppercase tracking-tighter">Database Range</span>
+          <span id="last-update-date" class="text-xs text-[var(--text-accent)] font-mono font-bold">Checking...</span>
+        </div>
         <div class="bg-[var(--bg-inner)] p-1 rounded-xl border border-[var(--border-color)] flex items-center gap-1">
           <button onclick="changeTheme('purple')"
             class="w-6 h-6 rounded-lg bg-[#4c1d95] border border-purple-400/40"></button>
@@ -147,9 +154,10 @@
         <div id="search-target-summary">データベース接続済み</div>
       </div>
       <div id="results-container" class="space-y-4 overflow-y-auto max-h-[60vh] pr-2"></div>
-      
+
       <div id="more-container" class="mt-6 text-center hidden">
-        <button id="more-btn" class="px-8 py-3 bg-[var(--bg-inner)] border border-[var(--border-color)] text-[var(--text-muted)] font-bold rounded-xl hover:bg-[var(--bg-accent)] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[var(--bg-accent)]">
+        <button id="more-btn"
+          class="px-8 py-3 bg-[var(--bg-inner)] border border-[var(--border-color)] text-[var(--text-muted)] font-bold rounded-xl hover:bg-[var(--bg-accent)] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[var(--bg-accent)]">
           さらに読み込む
         </button>
       </div>
@@ -182,8 +190,8 @@
 
   <script>
     const DEFAULT_VIDEO_ID = "Oz_WA5PcLRE";
-    const WORKER_URL = "https://search-api.nagomiclip.workers.dev"; 
-    
+    const WORKER_URL = "https://search-api.nagomiclip.workers.dev";
+
     let ytPlayer = null;
     let isPlayerReady = false;
     let currentPage = 0; // 現在のページ管理
@@ -222,13 +230,35 @@
 
     // --- システム初期化 ---
     async function initSystem() {
-      statusBadge.textContent = "オンライン";
-      statusBadge.className = "flex items-center gap-2 text-xs text-emerald-400 font-bold";
+      // 既存のヘルスチェック（空検索を投げて接続確認）
+      fetch(`${WORKER_URL}?q=`)
+        .then(() => {
+          statusBadge.textContent = "オンライン";
+          statusBadge.className = "flex items-center gap-2 text-xs text-emerald-400 font-bold";
+        })
+        .catch(() => {
+          statusBadge.textContent = "サーバー接続エラー";
+          statusBadge.className = "flex items-center gap-2 text-xs text-red-500 font-bold";
+        });
+      // ★追加: 最新の配信対象日を取得
+      fetch(`${WORKER_URL}/api/status`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.last_update) {
+            const d = data.last_update; // YYYYMMDD
+            lastUpdateSpan.textContent = `${d.substring(0, 4)}/${d.substring(4, 6)}/${d.substring(6, 8)} 配信分まで`;
+          } else {
+            lastUpdateSpan.textContent = "データなし";
+          }
+        })
+        .catch(() => {
+          lastUpdateSpan.textContent = "取得エラー";
+        });
+
       renderEmptyState();
     }
-
     // --- 検索機能 ---
-    
+
     // 新規検索実行
     async function triggerSearch() {
       currentPage = 0;
@@ -255,14 +285,14 @@
         moreBtn.textContent = "読み込み中...";
         moreBtn.disabled = true;
       }
-      
+
       try {
         targetSummary.textContent = isAppend ? `${currentPage + 1}ページ目を読み込み中...` : "データベースを検索中...";
-        
+
         // Workersへ検索リクエストを送信 (パラメータ p を付与)
         const response = await fetch(`${WORKER_URL}?q=${encodeURIComponent(query)}&p=${currentPage}`);
         if (!response.ok) throw new Error("検索リクエストに失敗しました");
-        
+
         const results = await response.json();
 
         if (results && results.length > 0) {
@@ -273,7 +303,7 @@
           }));
 
           renderBatchResults(formattedMatches, query);
-          
+
           // 取得件数が500件なら次がある可能性が高い
           if (results.length === 500) {
             moreContainer.classList.remove('hidden');
@@ -341,10 +371,10 @@
     }
 
     function formatTime(s) { const m = Math.floor(s / 60); const sec = s % 60; return `${m}:${String(sec).padStart(2, '0')}`; }
-    
-    function formatDate(d) { 
-      if(!d) return "不明";
-      return d.replace(/-/g, '/'); 
+
+    function formatDate(d) {
+      if (!d) return "不明";
+      return d.replace(/-/g, '/');
     }
 
     function highlightText(t, q) { return t.replace(new RegExp(`(${q})`, 'gi'), `<mark class="bg-[var(--highlight-bg)] text-[var(--highlight-text)] px-1 rounded">$1</mark>`); }
